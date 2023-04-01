@@ -80,6 +80,10 @@ export default [
     method: 'get',
     response: ({ query }) => {
       const { page = 1, pageSize = 20 } = query;
+<<<<<<< HEAD
+=======
+      console.log(resultPageSuccess(page, pageSize, teacherList));
+>>>>>>> b4506b6 (2023/4/1)
       return resultPageSuccess(page, pageSize, teacherList);
     },
   },

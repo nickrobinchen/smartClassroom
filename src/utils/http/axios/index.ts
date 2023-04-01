@@ -54,7 +54,12 @@ const transform: AxiosTransform = {
     const { code, result, message } = data;
 
     // 这里逻辑可以根据项目进行修改
+<<<<<<< HEAD
     const hasSuccess = data && Reflect.has(data, 'code') && code === ResultEnum.SUCCESS;
+=======
+    const hasSuccess =
+      data && Reflect.has(data, 'code') && (code === ResultEnum.SUCCESS || code === 200);
+>>>>>>> b4506b6 (2023/4/1)
     if (hasSuccess) {
       let successMsg = message;
 

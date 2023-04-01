@@ -37,13 +37,21 @@
           },
           {
             title: '工号',
+<<<<<<< HEAD
             dataIndex: 'id',
+=======
+            dataIndex: 'account',
+>>>>>>> b4506b6 (2023/4/1)
             width: 300,
           },
           {
             title: '联系电话',
             width: 400,
+<<<<<<< HEAD
             dataIndex: 'telephone',
+=======
+            dataIndex: 'tel',
+>>>>>>> b4506b6 (2023/4/1)
           },
         ],
         pagination: { pageSize: 10 },
