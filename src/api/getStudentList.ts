@@ -12,7 +12,7 @@ enum Api {
 export const getTeacherListApi = (params: StudentListParams) =>
   defHttp.get<StudentListGetResultModel>({
     url: Api.STUDENT_LIST,
-    params,
+    params: null,
     headers: {
       // @ts-ignore
       ignoreCancelToken: true,
