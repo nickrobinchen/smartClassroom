@@ -39,7 +39,6 @@ const teacherList = (() => {
       'status|1': ['normal', 'enable', 'disable'],
     });
   }
-  console.log(result);
   return result;
 })();
 const studentList = (() => {
@@ -81,7 +80,7 @@ export default [
     method: 'get',
     response: ({ query }) => {
       const { page = 1, pageSize = 20 } = query;
-      console.log(resultPageSuccess(page, pageSize, teacherList));
+      //console.log(resultPageSuccess(page, pageSize, teacherList));
       return resultPageSuccess(page, pageSize, teacherList);
     },
   },

@@ -2,9 +2,9 @@
   <BasicModal
     v-bind="$attrs"
     @register="register"
-    title="添加教师"
+    title="修改教师"
     @visible-change="handleVisibleChange"
-    @ok="handleAdd"
+    @ok="handleEdit"
   >
     <div class="pt-3px pr-3px">
       <BasicForm @register="registerForm" :model="model" />
@@ -15,8 +15,9 @@
   import { defineComponent, ref, nextTick } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, FormSchema, useForm } from '/@/components/Form/index';
-  import { AddTeacherParams, addTeacherApi } from '../../../api/teacherApi.js';
+  import { EditTeacherParams, editTeacherApi } from '/@/api/teacherApi';
 
+  let id = -1;
   //姓名 工号 联系电话 地址 邮箱
   const rules = {
     name: [
@@ -77,7 +78,7 @@
     {
       field: 'email',
       component: 'Input',
-      //required: true,
+      // required: true,
       label: '邮箱',
       colProps: {
         span: 20,
@@ -91,13 +92,14 @@
     },
     setup(props) {
       const modelRef = ref({});
+      console.log(props);
       const valid = true;
       const [
         registerForm,
         {
           getFieldsValue,
           validate,
-          // setFieldsValue,
+          setFieldsValue,
           // setProps
         },
       ] = useForm({
@@ -115,11 +117,16 @@
 
       function onDataReceive(data) {
         console.log('Data Received', data);
+        id = data.id;
         // 方式1;
-        // setFieldsValue({
-        //   field2: data.data,
-        //   field1: data.info,
-        // });
+
+        setFieldsValue({
+          name: data.name,
+          tel: data.tel,
+          account: data.account,
+          address: data.address,
+          email: data.email,
+        });
 
         // // 方式2
         //modelRef.value = { field2: data.data, field1: data.info };
@@ -133,18 +140,19 @@
         v && props.userData && nextTick(() => onDataReceive(props.userData));
       }
 
-      function handleAdd(e: Event) {
+      function handleEdit(e: Event) {
         validate()
           .then(() => {
             var formData = getFieldsValue();
-            const params: AddTeacherParams = {
+            const params: EditTeacherParams = {
               name: formData.name,
               tel: formData.tel,
               account: formData.account,
               address: formData.address,
               email: formData.email,
+              id: id,
             };
-            addTeacherApi(params);
+            editTeacherApi(params);
             //emit('posted', e);
             setModalProps({ visible: false });
           })
@@ -156,7 +164,7 @@
           return;
         }
       }
-      return { register, schemas, registerForm, model: modelRef, handleVisibleChange, handleAdd };
+      return { register, schemas, registerForm, model: modelRef, handleVisibleChange, handleEdit };
     },
   });
 </script>

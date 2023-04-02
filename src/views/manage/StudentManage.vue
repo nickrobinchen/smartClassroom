@@ -2,6 +2,7 @@
   <PageWrapper contentBackground contentClass="flex" dense contentFullHeight fixedHeight>
     <BasicTable @register="registerTable">
       <template #toolbar>
+        <a-cascader v-model:value="value" :options="options" placeholder="Please select" />
         <a-button type="primary" @click="handleReloadCurrent"> 刷新当前页 </a-button>
         <a-button type="primary" @click="handleReload"> 刷新并返回第一页 </a-button>
       </template>
@@ -10,18 +11,14 @@
           <TableAction
             :actions="[
               {
+                label: '编辑',
+                icon: 'ic:outline-edit',
+                onClick: handleDelete.bind(null, record),
+              },
+              {
                 label: '删除',
                 icon: 'ic:outline-delete-outline',
                 onClick: handleDelete.bind(null, record),
-              },
-            ]"
-            :dropDownActions="[
-              {
-                label: '启用',
-                popConfirm: {
-                  title: '是否启用？',
-                  confirm: handleOpen.bind(null, record),
-                },
               },
             ]"
           />
@@ -31,7 +28,46 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { defineComponent } from 'vue';
+  interface Option {
+    value: string;
+    label: string;
+    children?: Option[];
+  }
+  const options: Option[] = [
+    {
+      value: 'zhejiang',
+      label: 'Zhejiang',
+      children: [
+        {
+          value: 'hangzhou',
+          label: 'Hangzhou',
+          children: [
+            {
+              value: 'xihu',
+              label: 'West Lake',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      value: 'jiangsu',
+      label: 'Jiangsu',
+      children: [
+        {
+          value: 'nanjing',
+          label: 'Nanjing',
+          children: [
+            {
+              value: 'zhonghuamen',
+              label: 'Zhong Hua Men',
+            },
+          ],
+        },
+      ],
+    },
+  ];
+  import { defineComponent, ref } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { getBasicColumns } from './tableData';
   import { PageWrapper } from '/@/components/Page';
@@ -53,18 +89,18 @@
               { text: 'Female', value: 'female' },
             ],
           },
-          {
-            title: '家庭地址',
-            dataIndex: 'address',
-          },
+          // {
+          //   title: '家庭地址',
+          //   dataIndex: 'address',
+          // },
           {
             title: '学号',
             dataIndex: 'id',
-            width: 300,
+            width: 200,
           },
           {
             title: '联系电话',
-            width: 400,
+            width: 200,
             dataIndex: 'telephone',
           },
         ],
@@ -93,6 +129,8 @@
         });
       }
       return {
+        value: ref<string[]>([]),
+        options,
         registerTable,
         handleDelete,
         handleOpen,

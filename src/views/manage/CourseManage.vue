@@ -3,8 +3,8 @@
     <BasicTable @register="registerTable">
       <template #toolbar>
         <a-button type="primary" @click="handleReloadCurrent"> 刷新当前页 </a-button>
-        <a-button type="primary" @click="addTeacher"> 添加教师 </a-button>
-        <a-button type="danger" @click="deleteTeacher"> 删除选中教师 </a-button>
+        <a-button type="primary" @click="addCourse"> 添加课程 </a-button>
+        <a-button type="danger" @click="deleteSelected"> 删除选中课程 </a-button>
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
@@ -25,8 +25,8 @@
         </template>
       </template>
     </BasicTable>
-    <AddTeacherModal @register="register4" @ok="test" @visible-change="handleVisibleChange" />
-    <EditTeacherModal @register="edit_register" @ok="test" @visible-change="handleVisibleChange" />
+    <AddCourseModal @register="register4" @ok="test" @visible-change="handleVisibleChange" />
+    <EditCourseModal @register="edit_register" @ok="test" @visible-change="handleVisibleChange" />
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -34,52 +34,33 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
-  import AddTeacherModal from './modal/AddTeacherModal.vue';
-  import EditTeacherModal from './modal/EditTeacherModal.vue';
+  import AddCourseModal from './modal/AddCourseModal.vue';
+  import EditCourseModal from './modal/EditCourseModal.vue';
   import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-  import { getTeacherListApi, deleteTeacherApi, DeleteTeacherParams } from '/@/api/teacherApi';
+  import { getCourseListApi, deleteCourseApi, DeleteCourseParams } from '/@/api/courseApi';
   import { Modal } from 'ant-design-vue';
 
   export default defineComponent({
-    components: { BasicTable, PageWrapper, AddTeacherModal, EditTeacherModal, TableAction },
+    components: { BasicTable, PageWrapper, AddCourseModal, EditCourseModal, TableAction },
     setup() {
       const [register4, { openModal: openModal4 }] = useModal();
       const [edit_register, { openModal: openEditModal }] = useModal();
       const [registerTable, { reload, getSelectRows }] = useTable({
-        title: '教师管理',
-        api: getTeacherListApi,
+        title: '课程管理',
+        api: getCourseListApi,
         rowSelection: {
           type: 'checkbox',
         },
         columns: [
           {
-            title: '教师姓名',
+            title: '课程名称',
             dataIndex: 'name',
-            width: 120,
-            // filters: [
-            //   { text: 'Male', value: 'male' },
-            //   { text: 'Female', value: 'female' },
-            // ],
+            //width: 350,
           },
           {
-            title: '住址',
-            dataIndex: 'address',
-            width: 350,
-          },
-          {
-            title: '工号',
-            dataIndex: 'account',
-            //width: 300,
-          },
-          {
-            title: '联系电话',
-            //width: 400,
-            dataIndex: 'tel',
-          },
-          {
-            title: '电子邮箱',
-            width: 250,
-            dataIndex: 'email',
+            title: '课程年级',
+            dataIndex: 'grade',
+            //width: 350,
           },
         ],
         actionColumn: {
@@ -105,12 +86,12 @@
           page: 1,
         });
       }
-      function deleteTeacher() {
+      function deleteSelected() {
         const selected = getSelectRows();
         console.log(selected);
         selected.forEach((s) => {
-          const p: DeleteTeacherParams = { id: s.id };
-          deleteTeacherApi(p);
+          const p: DeleteCourseParams = { id: s.id };
+          deleteCourseApi(p);
         });
         setTimeout(() => {
           reload();
@@ -119,15 +100,15 @@
       function handleDelete(record: Recordable) {
         console.log('点击了删除', record);
         Modal.confirm({
-          title: () => '确定删除教师吗？',
+          title: () => '确定删除课程吗？',
           icon: () => createVNode(ExclamationCircleOutlined),
-          content: () => '删除教师姓名：' + record.name,
+          content: () => '删除课程名称：' + record.name,
           okText: () => 'Yes',
           okType: 'danger',
           cancelText: () => 'No',
           onOk() {
-            const p: DeleteTeacherParams = { id: record.id };
-            deleteTeacherApi(p);
+            const p: DeleteCourseParams = { id: record.id };
+            deleteCourseApi(p);
             setTimeout(() => {
               reload();
             }, 200);
@@ -144,21 +125,21 @@
       function test(_e: any) {
         console.log('?');
       }
-      function addTeacher() {
+      function addCourse() {
         openModal4(true);
       }
       return {
         registerTable,
         handleReloadCurrent,
         handleReload,
-        addTeacher,
+        addCourse,
         register4,
         edit_register,
         handleEdit,
         openEditModal,
         handleDelete,
         openModal4,
-        deleteTeacher,
+        deleteSelected,
         handleVisibleChange,
         test,
       };

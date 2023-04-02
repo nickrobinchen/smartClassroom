@@ -30,6 +30,14 @@ const adminmanage: AppRouteModule = {
         title: '学生管理',
       },
     },
+    {
+      path: 'coursemanage',
+      name: 'coursemanage',
+      component: () => import('/@/views/manage/CourseManage.vue'),
+      meta: {
+        title: '课程管理',
+      },
+    },
   ],
 };
 
