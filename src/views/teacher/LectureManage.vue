@@ -8,7 +8,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
-          <TableAction
+          <!--TableAction
             :actions="[
               {
                 label: '编辑',
@@ -21,7 +21,7 @@
                 onClick: handleDelete.bind(null, record),
               },
             ]"
-          />
+          /-->
         </template>
       </template>
     </BasicTable>
@@ -34,8 +34,8 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
-  import AddCourseModal from './modal/AddCourseModal.vue';
-  import EditCourseModal from './modal/EditCourseModal.vue';
+  import AddCourseModal from '../manage/modal/AddCourseModal.vue';
+  import EditCourseModal from '../manage/modal/EditCourseModal.vue';
   import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
   import { getCourseListApi, deleteCourseApi, DeleteCourseParams } from '/@/api/courseApi';
   import { Modal } from 'ant-design-vue';
@@ -46,7 +46,7 @@
       const [register4, { openModal: openModal4 }] = useModal();
       const [edit_register, { openModal: openEditModal }] = useModal();
       const [registerTable, { reload, getSelectRows }] = useTable({
-        title: '课程管理',
+        title: '我的课程',
         api: getCourseListApi,
         rowSelection: {
           type: 'checkbox',
