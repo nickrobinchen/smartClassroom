@@ -1,8 +1,13 @@
 <template>
   <PageWrapper contentBackground contentClass="flex" dense contentFullHeight fixedHeight>
-    <BasicTable @register="registerTable">
+    <BasicTable @register="registerTable" :dataSource="data" :immediate="false">
       <template #toolbar>
-        <a-cascader v-model:value="value" :options="options" placeholder="Please select" />
+        <a-cascader
+          v-model:value="value"
+          :options="options"
+          placeholder="请选择班级"
+          @change="refreshSelected"
+        />
         <a-button type="primary" @click="handleReloadCurrent"> 刷新当前页 </a-button>
         <a-button type="primary" @click="handleReload"> 刷新并返回第一页 </a-button>
       </template>
@@ -33,7 +38,13 @@
     label: string;
     children?: Option[];
   }
-  const options: Option[] = [
+  interface Selection {
+    class: string;
+    college: string;
+    grade: string;
+  }
+  let selected: Selection = { college: '', class: '', grade: '' };
+  let options: Option[] = [
     {
       value: 'zhejiang',
       label: 'Zhejiang',
@@ -69,16 +80,39 @@
   ];
   import { defineComponent, ref } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getBasicColumns } from './tableData';
   import { PageWrapper } from '/@/components/Page';
-
-  import { getTeacherListApi } from '/@/api/getStudentList';
+  import { StudentListParams, studentListApi } from '/@/api/studentApi';
+  import { defHttp } from '/@/utils/http/axios';
   export default defineComponent({
     components: { BasicTable, TableAction, PageWrapper },
     setup() {
-      const [registerTable, { reload }] = useTable({
+      defHttp
+        .get<Option[]>({
+          url: '/student/classInfo', //'http://localhost:5000/teacher/list', // Api.TEACHER_LIST,
+          params: null,
+          headers: {
+            // @ts-ignore
+            ignoreCancelToken: true,
+          },
+        })
+        .then((o) => {
+          console.log(o);
+          options = o;
+        });
+      let data: any[] = [];
+
+      studentListApi(undefined).then((r: any) => {
+        console.log(r);
+        data = r;
+        console.log(data);
+        setTimeout(() => {
+          return;
+        }, 100);
+        setTableData(data);
+      });
+      const [registerTable, { reload, setTableData }] = useTable({
         title: '学生管理',
-        api: getTeacherListApi,
+        //api: studentListApi,
         columns: [
           {
             title: '学生姓名',
@@ -95,13 +129,11 @@
           // },
           {
             title: '学号',
-            dataIndex: 'id',
-            width: 200,
+            dataIndex: 'account',
           },
           {
             title: '联系电话',
-            width: 200,
-            dataIndex: 'telephone',
+            dataIndex: 'tel',
           },
         ],
         pagination: { pageSize: 10 },
@@ -113,6 +145,29 @@
         },
       });
 
+      function refreshSelected(value, _selectedOptions) {
+        selected.college = value[0];
+        selected.grade = value[1];
+        selected.class = value[2];
+        console.log(selected);
+
+        const params: StudentListParams = {
+          college: selected.college,
+          grade: selected.grade,
+          class: selected.class,
+        };
+        studentListApi(params)
+          .then((r: any) => {
+            console.log(r);
+            data = r;
+            console.log(data);
+            setTimeout(() => {
+              return;
+            }, 100);
+            setTableData(data);
+          })
+          .catch((e) => console.log(e));
+      }
       function handleDelete(record: Recordable) {
         console.log('点击了删除', record);
       }
@@ -131,8 +186,10 @@
       return {
         value: ref<string[]>([]),
         options,
+        data,
         registerTable,
         handleDelete,
+        refreshSelected,
         handleOpen,
         handleReloadCurrent,
         handleReload,
