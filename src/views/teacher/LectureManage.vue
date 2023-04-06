@@ -8,7 +8,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
-          <!--TableAction
+          <TableAction
             :actions="[
               {
                 label: '编辑',
@@ -21,7 +21,7 @@
                 onClick: handleDelete.bind(null, record),
               },
             ]"
-          /-->
+          />
         </template>
       </template>
     </BasicTable>
@@ -41,6 +41,7 @@
   import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
   import { getCourseListApi, deleteCourseApi, DeleteCourseParams } from '/@/api/courseApi';
   import { Modal } from 'ant-design-vue';
+  import { defHttp } from '/@/utils/http/axios';
 
   export default defineComponent({
     components: {
@@ -50,12 +51,23 @@
       TableAction,
     },
     setup() {
+      const teacher_id = 1;
       const [registerLM, { openModal: openModalLM }] = useModal();
       const [register4, { openModal: openModal4 }] = useModal();
       const [edit_register, { openModal: openEditModal }] = useModal();
       const [registerTable, { reload, getSelectRows }] = useTable({
         title: '我的课程',
-        api: getCourseListApi,
+        api: () => defHttp.post<any>({ url: '/lecture/list', params: null }) /*(): Promise<any> => {
+          return defHttp.post<any>({ url: '/lecture/list', params: null });
+          let result: Promise<any> = new Promise<null>(() => {
+            console.log('Fetch course list error.');
+          });
+          defHttp.post<any>({ url: '/lecture/list', params: null }).then((r) => {
+            console.log(r);
+            result = r;
+          });
+          return result;
+        }*/,
         rowSelection: {
           type: 'checkbox',
         },
@@ -66,8 +78,13 @@
             //width: 350,
           },
           {
-            title: '课程年级',
-            dataIndex: 'grade',
+            title: '课程班级',
+            dataIndex: 'klass',
+            //width: 350,
+          },
+          {
+            title: '课程时间',
+            dataIndex: 'startAndEndDate',
             //width: 350,
           },
         ],
@@ -126,6 +143,7 @@
           },
         });
       }
+
       function handleEdit(record: Recordable) {
         console.log('点击了修改', record);
         openEditModal(true, record);
