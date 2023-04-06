@@ -25,7 +25,7 @@ const teacherpanel: AppRouteModule = {
     {
       path: 'lecturemanage',
       name: 'lecturemanage',
-      component: () => import('/@/views/teacher/lecturemanage.vue'),
+      component: () => import('/@/views/teacher/LectureManage.vue'),
       meta: {
         title: '教师课程管理',
       },

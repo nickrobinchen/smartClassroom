@@ -4,12 +4,8 @@ export type CourseListParams = null;
 
 export interface CourseListItem {
   id: number;
-  address: string;
   name: string;
-  account: string;
-  tel: string;
-  email: string;
-  password: string;
+  grade: string;
 }
 
 export type CourseListGetResultModel = BasicFetchResult<CourseListItem>;

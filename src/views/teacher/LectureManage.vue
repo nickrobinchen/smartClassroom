@@ -25,6 +25,7 @@
         </template>
       </template>
     </BasicTable>
+    <AddLectureModal @register="registerLM" />
     <AddCourseModal @register="register4" @ok="test" @visible-change="handleVisibleChange" />
     <EditCourseModal @register="edit_register" @ok="test" @visible-change="handleVisibleChange" />
   </PageWrapper>
@@ -34,15 +35,22 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
-  import AddCourseModal from '../manage/modal/AddCourseModal.vue';
-  import EditCourseModal from '../manage/modal/EditCourseModal.vue';
+  //import AddCourseModal from '../manage/modal/AddCourseModal.vue';
+  import AddLectureModal from './modal/AddLectureModal.vue';
+  //import EditCourseModal from '../manage/modal/EditCourseModal.vue';
   import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
   import { getCourseListApi, deleteCourseApi, DeleteCourseParams } from '/@/api/courseApi';
   import { Modal } from 'ant-design-vue';
 
   export default defineComponent({
-    components: { BasicTable, PageWrapper, AddCourseModal, EditCourseModal, TableAction },
+    components: {
+      BasicTable,
+      PageWrapper,
+      AddLectureModal,
+      TableAction,
+    },
     setup() {
+      const [registerLM, { openModal: openModalLM }] = useModal();
       const [register4, { openModal: openModal4 }] = useModal();
       const [edit_register, { openModal: openEditModal }] = useModal();
       const [registerTable, { reload, getSelectRows }] = useTable({
@@ -126,7 +134,7 @@
         console.log('?');
       }
       function addCourse() {
-        openModal4(true);
+        openModalLM(true);
       }
       return {
         registerTable,
@@ -135,6 +143,8 @@
         addCourse,
         register4,
         edit_register,
+        openModalLM,
+        registerLM,
         handleEdit,
         openEditModal,
         handleDelete,
