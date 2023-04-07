@@ -1,53 +1,37 @@
 <template>
-  <PageWrapper contentBackground contentClass="flex" dense contentFullHeight>
-    <a-page-header title="课程教学管理" subtitle="">
-      <template #extra>
-        <a-space>请选择课程:</a-space
-        ><a-space
-          ><a-select
-            ref="select"
-            v-model:value="label"
-            style="width: 240px"
-            :options="options"
-            defaultOpen="true"
-            @change="handleChange"
-        /></a-space>
+  <PageWrapper contentBackground contentClass="flex" dense contentFullHeight fixedHeight>
+    <BasicTable @register="registerTable">
+      <template #toolbar>
+        <a-button type="primary" @click="handleReloadCurrent"> 刷新当前页 </a-button>
+        <a-button type="primary" @click="addCourse"> 添加课程 </a-button>
+        <a-button type="danger" @click="deleteSelected"> 删除选中课程 </a-button>
       </template>
-      <template #footer>
-        <a-tabs>
-          <a-tab-pane key="1" tab="课程学生列表">
-            <BasicTable @register="registerTable" :dataSource="data" :immediate="false" />
-          </a-tab-pane>
-          <a-tab-pane key="2" tab="课程签到管理">
-            <a-button @click="startCheckIn">开启签到</a-button>
-
-            <a-modal v-model:visible="visible" title="开启签到" @ok="handleOk"
-              ><a-row>
-                <a-space
-                  ><span> &nbsp;&nbsp;签到开启时长：</span>
-                  <a-input-number
-                    id="inputNumber"
-                    v-model:value="value"
-                    :defaultValue="10"
-                    :size="20"
-                    :min="1"
-                    :max="60"
-                  /><span>分钟</span></a-space
-                >
-              </a-row>
-            </a-modal>
-          </a-tab-pane>
-        </a-tabs>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'action'">
+          <TableAction
+            :actions="[
+              {
+                label: '编辑',
+                icon: 'ic:outline-edit',
+                onClick: handleEdit.bind(null, record),
+              },
+              {
+                label: '删除',
+                icon: 'ic:outline-delete-outline',
+                onClick: handleDelete.bind(null, record),
+              },
+            ]"
+          />
+        </template>
       </template>
-    </a-page-header>
+    </BasicTable>
     <AddLectureModal @register="registerLM" />
     <AddCourseModal @register="register4" @ok="test" @visible-change="handleVisibleChange" />
     <EditCourseModal @register="edit_register" @ok="test" @visible-change="handleVisibleChange" />
   </PageWrapper>
 </template>
 <script lang="ts">
-  import moment from 'moment';
-  import { defineComponent, createVNode, getCurrentInstance, ref } from 'vue';
+  import { defineComponent, createVNode } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
@@ -58,13 +42,7 @@
   import { getCourseListApi, deleteCourseApi, DeleteCourseParams } from '/@/api/courseApi';
   import { Modal } from 'ant-design-vue';
   import { defHttp } from '/@/utils/http/axios';
-  import { ComponentInternalInstance } from 'vue';
-  import { studentListApi } from '/@/api/studentApi';
-  import { def } from '@vue/shared';
-  let options: Array<any> = [];
-  let lec_info: any = null;
-  let lec_selected = -1;
-  let data: any[] = [];
+
   export default defineComponent({
     components: {
       BasicTable,
@@ -73,68 +51,55 @@
       TableAction,
     },
     setup() {
-      const value = ref(moment('5:00', 'mm:ss'));
-      const visible = ref<boolean>(false);
-      console.log(this);
-      defHttp.post<any>({ url: '/lecture/list', params: null }).then((r) => {
-        options = [];
-        r.forEach((item) => {
-          options.push({ label: item.name + '(' + item.klass + ')', value: item.id });
-        });
-        lec_info = r;
-      });
+      const teacher_id = 1;
       const [registerLM, { openModal: openModalLM }] = useModal();
       const [register4, { openModal: openModal4 }] = useModal();
       const [edit_register, { openModal: openEditModal }] = useModal();
-      const [registerTable, { reload, getSelectRows, setTableData }] = useTable({
-        //title: '我的课程',
+      const [registerTable, { reload, getSelectRows }] = useTable({
+        title: '我的课程',
+        api: () => defHttp.post<any>({ url: '/lecture/list', params: null }) /*(): Promise<any> => {
+          return defHttp.post<any>({ url: '/lecture/list', params: null });
+          let result: Promise<any> = new Promise<null>(() => {
+            console.log('Fetch course list error.');
+          });
+          defHttp.post<any>({ url: '/lecture/list', params: null }).then((r) => {
+            console.log(r);
+            result = r;
+          });
+          return result;
+        }*/,
+        rowSelection: {
+          type: 'checkbox',
+        },
         columns: [
           {
-            title: '学生名称',
+            title: '课程名称',
             dataIndex: 'name',
             //width: 350,
           },
           {
-            title: '学生学号',
-            dataIndex: 'account',
+            title: '课程班级',
+            dataIndex: 'klass',
+            //width: 350,
+          },
+          {
+            title: '课程时间',
+            dataIndex: 'startAndEndDate',
             //width: 350,
           },
         ],
+        actionColumn: {
+          //width: 160,
+          title: '管理操作',
+          dataIndex: 'action',
+          // slots: { customRender: 'action' },
+        },
         pagination: { pageSize: 10 },
       });
-      function startCheckIn() {
-        if (lec_selected == -1) {
-          return;
-        }
-
-        visible.value = true;
+      function handleReloadCurrent() {
+        reload();
       }
 
-      function handleChange(e, _b) {
-        lec_selected = e;
-        let class_name = '';
-        lec_info.forEach((i) => {
-          if (i.id == e) {
-            class_name = i.klass;
-          }
-        });
-        defHttp
-          .post<any>({ url: '/student/list', params: { class: class_name } })
-          .then((r: any) => {
-            console.log(r);
-            data = r;
-            console.log(data);
-            setTimeout(() => {
-              return;
-            }, 100);
-            setTableData(data);
-          })
-          .catch((e) => console.log(e));
-      }
-      function selectFirst(e) {
-        console.log('firsst');
-        console.log(e);
-      }
       function handleVisibleChange() {
         setTimeout(() => {
           reload();
@@ -190,27 +155,21 @@
         openModalLM(true);
       }
       return {
-        value,
-        moment,
-        selectFirst,
         registerTable,
-        startCheckIn,
+        handleReloadCurrent,
+        handleReload,
         addCourse,
         register4,
         edit_register,
         openModalLM,
-        options,
         registerLM,
         handleEdit,
         openEditModal,
         handleDelete,
         openModal4,
-        handleChange,
         deleteSelected,
         handleVisibleChange,
         test,
-        data,
-        visible,
       };
     },
   });

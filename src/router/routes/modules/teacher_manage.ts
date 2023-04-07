@@ -23,19 +23,19 @@ const teacherpanel: AppRouteModule = {
       },
     },
     {
+      path: 'lecturelist',
+      name: 'lecturelist',
+      component: () => import('/@/views/teacher/LectureList.vue'),
+      meta: {
+        title: '我的课程',
+      },
+    },
+    {
       path: 'lecturemanage',
       name: 'lecturemanage',
       component: () => import('/@/views/teacher/LectureManage.vue'),
       meta: {
-        title: '教师课程管理',
-      },
-    },
-    {
-      path: 'studentlist',
-      name: 'studentlist',
-      //component: () => import('/@/views/manage/StudentManage.vue'),
-      meta: {
-        title: '学生名单查询',
+        title: '课程管理',
       },
     },
   ],
