@@ -16,7 +16,7 @@ export type CourseListGetResultModel = BasicFetchResult<CourseListItem>;
 export type StudentListParams = {
   college: string;
   grade: string;
-  class: string;
+  class_id: string;
 }; // BasicPageParams;
 
 enum Api {

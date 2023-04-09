@@ -154,7 +154,7 @@
         const params: StudentListParams = {
           college: selected.college,
           grade: selected.grade,
-          class: selected.class,
+          class_id: selected.class,
         };
         studentListApi(params)
           .then((r: any) => {
