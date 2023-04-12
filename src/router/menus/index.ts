@@ -76,6 +76,9 @@ export const getMenus = async (): Promise<Menu[]> => {
   const menus = await getAsyncMenus();
   if (isRoleMode()) {
     const routes = router.getRoutes();
+
+    console.log(routes);
+    console.log(filter(menus, basicFilter(routes)));
     return filter(menus, basicFilter(routes));
   }
   return menus;

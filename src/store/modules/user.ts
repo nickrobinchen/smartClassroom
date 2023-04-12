@@ -6,7 +6,7 @@ import { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
 import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY } from '/@/enums/cacheEnum';
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
-import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel';
+import { GetUserInfoModel, LoginParams, RoleInfo } from '/@/api/sys/model/userModel';
 import { doLogout, getUserInfo, loginApi } from '/@/api/sys/user';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { useMessage } from '/@/hooks/web/useMessage';
@@ -16,6 +16,7 @@ import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 import { isArray } from '/@/utils/is';
 import { h } from 'vue';
+import { usePermission } from '/@/hooks/web/usePermission';
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
@@ -91,10 +92,15 @@ export const useUserStore = defineStore({
       try {
         const { goHome = true, mode, ...loginParams } = params;
         const data = await loginApi(loginParams, mode);
-        const { token } = data;
-
+        const { roles, token } = data;
+        console.log(roles);
         // save token
         this.setToken(token);
+        // const { changeRole } = usePermission();
+
+        const roleList = roles as RoleEnum[];
+        this.setRoleList(roleList);
+
         return this.afterLoginAction(goHome);
       } catch (error) {
         return Promise.reject(error);
@@ -124,15 +130,30 @@ export const useUserStore = defineStore({
     },
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
-      const userInfo = await getUserInfo();
-      const { roles = [] } = userInfo;
-      if (isArray(roles)) {
-        const roleList = roles.map((item) => item.value) as RoleEnum[];
-        this.setRoleList(roleList);
-      } else {
-        userInfo.roles = [];
-        this.setRoleList([]);
-      }
+
+      //await getUserInfo();
+      const roles = this.getRoleList;
+      console.log(roles);
+      //const roleList = roles.map((item) => item.value) as RoleEnum[];
+      const ri: RoleInfo[] = [];
+      roles.forEach((item) => {
+        ri.push({ value: 'admin', roleName: 'admin' });
+      });
+      //this.setRoleList(roleList);
+
+      const userInfo = {
+        userId: '1',
+        username: 'nick',
+        roles: ri,
+        avatar: 'avatar',
+        realName: '用户名',
+      };
+      console.log(userInfo);
+      // if (isArray(roles)) {
+      // } else {
+      //   userInfo.roles = [];
+      //   this.setRoleList([]);
+      // }
       this.setUserInfo(userInfo);
       return userInfo;
     },

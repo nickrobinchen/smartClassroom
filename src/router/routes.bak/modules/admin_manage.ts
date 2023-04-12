@@ -2,7 +2,6 @@ import type { AppRouteModule } from '/@/router/types';
 
 import { getParentLayout, LAYOUT } from '/@/router/constant';
 import { t } from '/@/hooks/web/useI18n';
-import { RoleEnum } from '/@/enums/roleEnum';
 
 const adminmanage: AppRouteModule = {
   path: '/adminmanage',
@@ -13,7 +12,6 @@ const adminmanage: AppRouteModule = {
     orderNo: 100000,
     icon: 'ion:layers-outline',
     title: '用户管理（管理员身份）',
-    roles: [RoleEnum.ADMIN, RoleEnum.SUPER],
   },
   children: [
     {

@@ -125,6 +125,7 @@ export const usePermissionStore = defineStore({
         const { roles } = meta || {};
         if (!roles) return true;
         // 进行角色权限判断
+
         return roleList.some((role) => roles.includes(role));
       };
 

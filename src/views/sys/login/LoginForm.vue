@@ -136,7 +136,7 @@
       loading.value = true;
       const userInfo = await userStore.login({
         password: data.password,
-        username: data.account,
+        account: data.account,
         mode: 'none', //不要默认的错误提示
       });
       if (userInfo) {
@@ -145,6 +145,7 @@
           description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realName}`,
           duration: 3,
         });
+        console.log();
       }
     } catch (error) {
       createErrorModal({
