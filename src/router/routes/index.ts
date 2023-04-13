@@ -28,7 +28,6 @@ export const RootRoute: AppRouteRecordRaw = {
     title: 'Root',
   },
 };
-console.log(routeModuleList);
 export const LoginRoute: AppRouteRecordRaw = {
   path: '/login',
   name: 'Login',

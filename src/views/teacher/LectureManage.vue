@@ -24,9 +24,20 @@
             />
           </a-tab-pane>
           <a-tab-pane key="2" tab="课程签到管理">
-            <a-row> <a-button @click="showSignInModal">开启签到</a-button></a-row>
+            <a-row
+              ><a-space>
+                <a-button type="primary" :disabled="isSigningIn" @click="showSignInModal"
+                  >开启签到</a-button
+                >
+                <a-button v-show="isSigningIn" danger @click="endSigningIn"
+                  >提前结束签到</a-button
+                ></a-space
+              ></a-row
+            >
+            <a-divider />
             <a-row>
               <a-progress
+                v-show="isSigningIn"
                 type="circle"
                 :align="center"
                 :percent="defaultPercent"
@@ -47,19 +58,60 @@
                 /><span>分钟</span></a-space
               >
             </a-modal>
-            <!--p>当前已签到人员：{{ signed }}</p-->
-            <a-list :grid="{ gutter: 16, column: 10 }" :data-source="data">
+            <a-space />
+            <a-row :gutter="16" v-show="isSigningIn">
+              <a-col :span="2.5" v-for="item in data" :key="item.name">
+                <a-card
+                  style="background-color: #84af9b; border-radius: 12px"
+                  :title="item.name"
+                  :bordered="true"
+                >
+                  <p>{{ item.time }}</p>
+                </a-card>
+              </a-col>
+            </a-row>
+            <!--a-card title="Card Title">
+              <a-card-grid
+                v-for="item in data"
+                :key="item.name"
+                style="width: 12.5%; text-align: center"
+                >{{ item.name + item.time }}</a-card-grid
+              >
+            </a-card-->
+            <!--a-list v-show="isSigningIn" :grid="{ gutter: 16, column: 10 }" :data-source="data">
               <template #renderItem="{ item }">
                 <a-list-item :align="center">
                   <a-card :title="item.title">{{ item.time }}</a-card>
                 </a-list-item>
               </template>
-            </a-list>
+            </a-list-->
+            <a-collapse v-model:activeKey="activeKey">
+              <a-collapse-panel key="1" header="本次签到结果" :disabled="!signInFinished">
+                <SignInResult
+                  v-if="signInFinished"
+                  :signed-num="signInInfo.signNum"
+                  :total-num="signInInfo.totalNum"
+                  :signed-list="signInInfo.sList"
+                  :unsigned-list="signInInfo.uList"
+                  :time-duration="signInInfo.timeDuration"
+                />
+              </a-collapse-panel>
+              <a-collapse-panel key="2" header="历史签到记录">
+                <SignInResult
+                  v-for="item in prevSignIns"
+                  :key="item.id"
+                  :signed-num="item.signNum"
+                  :total-num="item.totalNum"
+                  :signed-list="item.sList"
+                  :unsigned-list="item.uList"
+                  :time-duration="item.timeDuration"
+                />
+              </a-collapse-panel>
+            </a-collapse>
           </a-tab-pane>
           <a-tab-pane key="3" tab="课程分数管理">
             <BasicTable
               @register="registerScoreTable"
-              :dataSource="stu_data_with_score"
               @edit-end="handleEditEnd"
               @edit-cancel="handleEditCancel"
               :beforeEditSubmit="beforeEditSubmit"
@@ -75,7 +127,6 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import moment from 'moment';
   import { defineComponent, createVNode, getCurrentInstance, ref } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
@@ -91,13 +142,21 @@
   import { studentListApi } from '/@/api/studentApi';
   import { def } from '@vue/shared';
   import { onBeforeUnmount } from 'vue';
-  import { text } from 'stream/consumers';
-  import { isNull } from 'xe-utils';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import SignInResult from './SignInResult.vue';
+  import { enableStorageEncryption } from '/@/settings/encryptionSetting';
+  interface SignInModel {
+    uList: Array<String>;
+    sList: Array<String>;
+    signNum: number;
+    totalNum: number;
+    timeDuration: Array<String>;
+  }
   let lec_info: any = null;
   let lec_selected = -1;
   let signIn_id = -1;
   let stu_data: any[] = [];
+
   let max_second = 180;
   let score_fetched = false;
   let current_second = 0;
@@ -106,15 +165,23 @@
       BasicTable,
       PageWrapper,
       AddLectureModal,
-      TableAction,
+      SignInResult,
     },
     setup() {
-      const options = ref<Array<any>>();
-      let text = '';
+      const activeKey = ref('');
+      const options = ref<Array<any>>([]);
+      const isSigningIn = ref(false);
+      const signInFinished = ref(false);
+      const signInInfo = ref<SignInModel>({
+        uList: [],
+        sList: [],
+        signNum: 0,
+        totalNum: 0,
+        timeDuration: ['', ''],
+      });
+      const prevSignIns = ref<SignInModel[]>([]);
       const data = ref<any[]>([]);
-      const signed = ref('');
       const value = ref(3);
-      let isSigningIn = true;
       let signin_data: any[] = [];
       const defaultPercent = ref<number>(0);
       const visible = ref<boolean>(false);
@@ -195,7 +262,6 @@
           .then((r: any) => {
             score_data = [];
             r.forEach((item) => {
-              console.log(isNull(item.score));
               score_data.push({
                 name: item.name,
                 id: item.id,
@@ -215,6 +281,29 @@
             class_name = i.klass;
           }
         });
+        defHttp
+          .get<any>({ url: '/signIn/prev', params: { lec_id: lec_selected } })
+          .then((r: any) => {
+            prevSignIns.value = [];
+
+            r.forEach((i) => {
+              let s_item: SignInModel = {
+                signNum: i.signed_num,
+                uList: i.unsigned_students,
+                totalNum: i.total_num,
+                timeDuration: [],
+                sList: [],
+              };
+              s_item.sList = i.signed_students.map((i) => {
+                return i.name;
+              });
+              const end = new Date(parseInt(i.end_time)).toLocaleTimeString();
+              const begin = new Date(parseInt(i.start_time)).toLocaleString();
+              s_item.timeDuration = [begin, end];
+              prevSignIns.value.push(s_item);
+            });
+          })
+          .catch((e) => console.log(e));
         defHttp
           .post<any>({ url: '/student/list', params: { class: class_name } })
           .then((r: any) => {
@@ -240,14 +329,18 @@
         defHttp
           .post<number>({
             url: '/signIn/add',
-            params: { lec_id: lec_selected, end_time: new Date().getTime() + max_second * 1000 },
+            params: {
+              lec_id: lec_selected,
+              end_time: new Date().getTime() + max_second * 1000,
+              start_time: new Date().getTime(),
+            },
           })
           .then((r: number) => {
             console.log(r);
             signIn_id = r;
           })
           .catch((e) => console.log(e));
-        isSigningIn = true;
+        isSigningIn.value = true;
         timer = setInterval(() => {
           current_second++;
           defaultPercent.value = (current_second / max_second) * 100;
@@ -258,26 +351,34 @@
             })
             .then((r) => {
               console.log(r);
-              signin_data = [];
-              data.value = [];
-              //text = '';
-              r.forEach((item) => {
-                //text = text + ' ' + item.name;
-                data.value.push({
-                  title: item.name,
-                  time: new Date(parseInt(item.signin_time)).toLocaleTimeString(),
+              if (r.ended) {
+              } else {
+                signin_data = [];
+                data.value = [];
+                //text = '';
+                r.data.forEach((item) => {
+                  //text = text + ' ' + item.name;
+                  data.value.push({
+                    name: item.name,
+                    time: new Date(parseInt(item.signin_time)).toLocaleTimeString(),
+                  });
                 });
-              });
-              console.log(signin_data);
-              //key++;
-              signed.value = text;
+              }
+              if (max_second <= current_second) {
+                clearInterval(timer);
+                isSigningIn.value = false;
+                console.log('finished');
+                defHttp
+                  .get<any>({ url: '/signIn/end', params: { signin_id: signIn_id } })
+                  .then((r) => {
+                    console.log(r);
+                    afterSigningIn(r);
+                  });
+              }
             });
-          if (max_second <= current_second) {
-            clearInterval(timer);
-            console.log('finished');
-          }
         }, 1000);
       }
+
       function handleEditEnd({ record, index, key, value }: Recordable) {
         console.log(record, index, key, value);
         return false;
@@ -336,11 +437,6 @@
 
         return (min.length == 1 ? '0' : '') + min + ':' + (sec.length == 1 ? '0' : '') + sec;
       }
-      function handleReload() {
-        reload({
-          page: 1,
-        });
-      }
       function deleteSelected() {
         const selected = getSelectRows();
         console.log(selected);
@@ -376,6 +472,32 @@
       onBeforeUnmount(() => {
         clearInterval(timer);
       });
+
+      function afterSigningIn(r: any, endTime?: number) {
+        activeKey.value = '1';
+        signInInfo.value.signNum = r.data.signed_num;
+        signInInfo.value.totalNum = r.data.total_num;
+        signInInfo.value.sList = r.data.signed_students.map((i) => {
+          return i.name;
+        });
+        const end =
+          typeof endTime === 'undefined'
+            ? new Date(parseInt(r.data.end_time)).toLocaleTimeString()
+            : new Date(endTime).toLocaleTimeString();
+        const begin = new Date(parseInt(r.data.start_time)).toLocaleString();
+        console.log([begin, end]);
+        signInInfo.value.timeDuration = [begin, end];
+        signInInfo.value.uList = r.data.unsigned_students;
+        signInFinished.value = true;
+      }
+      function endSigningIn() {
+        clearInterval(timer);
+        isSigningIn.value = false;
+        defHttp.get<any>({ url: '/signIn/end', params: { signin_id: signIn_id } }).then((r) => {
+          console.log(r);
+          afterSigningIn(r, new Date().getTime());
+        });
+      }
       function handleEdit(record: Recordable) {
         console.log('点击了修改', record);
         openEditModal(true, record);
@@ -388,11 +510,14 @@
       }
       return {
         defaultPercent,
+        prevSignIns,
         value,
+        signInInfo,
         signin_data,
         showTimeRemaining,
         selectFirst,
         registerTable,
+        endSigningIn,
         showSignInModal,
         addCourse,
         register4,
@@ -416,10 +541,16 @@
         data,
         handleTabChange,
         visible,
-        isSigningIn: false,
-        signed,
+        isSigningIn,
+        signInFinished,
+        activeKey,
         key: 0,
       };
     },
   });
 </script>
+<style lang="less">
+  .ant-card-body {
+    padding: 15px;
+  }
+</style>

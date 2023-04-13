@@ -145,7 +145,7 @@ export const useUserStore = defineStore({
         userId: '1',
         username: 'nick',
         roles: ri,
-        avatar: 'avatar',
+        avatar: '',
         realName: '用户名',
       };
       console.log(userInfo);

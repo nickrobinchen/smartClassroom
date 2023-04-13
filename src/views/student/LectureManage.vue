@@ -24,7 +24,14 @@
             />
           </a-tab-pane>
           <a-tab-pane key="2" tab="课程签到管理">
-            <a-row> <a-button @click="showSignInModal">开启签到</a-button></a-row>
+            <a-row
+              ><a-space>
+                <a-button type="primary" @click="showSignInModal">开启签到</a-button>
+                <a-button danger @click="endSigningIn" disabled="true"
+                  >提前结束签到</a-button
+                ></a-space
+              ></a-row
+            >
             <a-row>
               <a-progress
                 type="circle"
@@ -34,20 +41,21 @@
               />
             </a-row>
             <a-modal v-model:visible="visible" title="开启签到" @ok="handleOk">
-              <a-space
-                ><span> &nbsp;&nbsp;签到开启时长：</span>
-                <a-input-number
-                  id="inputNumber"
-                  v-model:value="value"
-                  :key="key"
-                  :defaultValue="10"
-                  :size="20"
-                  :min="1"
-                  :max="60"
-                /><span>分钟</span></a-space
+              <div>
+                <a-space
+                  ><span> &nbsp;&nbsp;签到开启时长：</span>
+                  <a-input-number
+                    id="inputNumber"
+                    v-model:value="value"
+                    :key="key"
+                    :defaultValue="10"
+                    :size="20"
+                    :min="1"
+                    :max="60"
+                  /><span>分钟</span></a-space
+                ></div
               >
             </a-modal>
-            <!--p>当前已签到人员：{{ signed }}</p-->
             <a-list :grid="{ gutter: 16, column: 10 }" :data-source="data">
               <template #renderItem="{ item }">
                 <a-list-item :align="center">
@@ -111,10 +119,10 @@
     setup() {
       const options = ref<Array<any>>();
       let text = '';
+      const isSigningIn = ref(false);
       const data = ref<any[]>([]);
       const signed = ref('');
       const value = ref(3);
-      let isSigningIn = true;
       let signin_data: any[] = [];
       const defaultPercent = ref<number>(0);
       const visible = ref<boolean>(false);
@@ -195,7 +203,6 @@
           .then((r: any) => {
             score_data = [];
             r.forEach((item) => {
-              console.log(isNull(item.score));
               score_data.push({
                 name: item.name,
                 id: item.id,
@@ -247,7 +254,7 @@
             signIn_id = r;
           })
           .catch((e) => console.log(e));
-        isSigningIn = true;
+        isSigningIn.value = true;
         timer = setInterval(() => {
           current_second++;
           defaultPercent.value = (current_second / max_second) * 100;
@@ -274,6 +281,7 @@
             });
           if (max_second <= current_second) {
             clearInterval(timer);
+            isSigningIn.value = false;
             console.log('finished');
           }
         }, 1000);
@@ -376,6 +384,7 @@
       onBeforeUnmount(() => {
         clearInterval(timer);
       });
+      function endSigningIn() {}
       function handleEdit(record: Recordable) {
         console.log('点击了修改', record);
         openEditModal(true, record);
@@ -393,6 +402,7 @@
         showTimeRemaining,
         selectFirst,
         registerTable,
+        endSigningIn,
         showSignInModal,
         addCourse,
         register4,
@@ -416,7 +426,7 @@
         data,
         handleTabChange,
         visible,
-        isSigningIn: false,
+        isSigningIn,
         signed,
         key: 0,
       };
