@@ -1,9 +1,9 @@
 <template>
   <a-row align="middle">
-    <a-col xl="10" :lg="8" :offset="2">
+    <a-col xl="10" :lg="8" :offset="0">
       <div ref="chartRef" :style="{ height, width }"></div>
     </a-col>
-    <a-col xl="10" :lg="14">
+    <a-col xl="10" :lg="15" :offset="1">
       <a-typography-title :level="3"
         >签到时间：{{ timeDuration[0] }}~{{ timeDuration[1] }}</a-typography-title
       >

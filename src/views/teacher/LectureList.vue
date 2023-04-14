@@ -3,7 +3,7 @@
     <BasicTable @register="registerTable">
       <template #toolbar>
         <a-button type="primary" @click="handleReloadCurrent"> 刷新当前页 </a-button>
-        <a-button type="primary" @click="addCourse"> 添加课程 </a-button>
+        <a-button type="primary" @click="addCourse"> 教师开课 </a-button>
         <a-button type="danger" @click="deleteSelected"> 删除选中课程 </a-button>
       </template>
       <template #bodyCell="{ column, record }">
@@ -57,17 +57,7 @@
       const [edit_register, { openModal: openEditModal }] = useModal();
       const [registerTable, { reload, getSelectRows }] = useTable({
         title: '我的课程',
-        api: () => defHttp.post<any>({ url: '/lecture/list', params: null }) /*(): Promise<any> => {
-          return defHttp.post<any>({ url: '/lecture/list', params: null });
-          let result: Promise<any> = new Promise<null>(() => {
-            console.log('Fetch course list error.');
-          });
-          defHttp.post<any>({ url: '/lecture/list', params: null }).then((r) => {
-            console.log(r);
-            result = r;
-          });
-          return result;
-        }*/,
+        api: () => defHttp.post<any>({ url: '/lecture/list', params: null }),
         rowSelection: {
           type: 'checkbox',
         },
@@ -85,6 +75,11 @@
           {
             title: '课程时间',
             dataIndex: 'startAndEndDate',
+            //width: 350,
+          },
+          {
+            title: '周内日期',
+            dataIndex: 'weekDay',
             //width: 350,
           },
         ],
@@ -132,12 +127,13 @@
           okType: 'danger',
           cancelText: () => 'No',
           onOk() {
-            const p: DeleteCourseParams = { id: record.id };
-            deleteCourseApi(p);
-            setTimeout(() => {
-              reload();
-            }, 200);
+            defHttp.post<any>({ url: '/lecture/delete', params: { id: record.id } }).then(() => {
+              setTimeout(() => {
+                reload();
+              }, 200);
+            });
           },
+
           onCancel() {
             console.log('Cancel');
           },

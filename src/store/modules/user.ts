@@ -131,29 +131,29 @@ export const useUserStore = defineStore({
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
 
-      //await getUserInfo();
+      const userInfo = await getUserInfo();
       const roles = this.getRoleList;
       console.log(roles);
       //const roleList = roles.map((item) => item.value) as RoleEnum[];
-      const ri: RoleInfo[] = [];
-      roles.forEach((item) => {
-        ri.push({ value: 'admin', roleName: 'admin' });
-      });
+      // const ri: RoleInfo[] = [];
+      // roles.forEach((item) => {
+      //   ri.push({ value: 'admin', roleName: 'admin' });
+      // });
       //this.setRoleList(roleList);
 
-      const userInfo = {
-        userId: '1',
-        username: 'nick',
-        roles: ri,
-        avatar: '',
-        realName: '用户名',
-      };
-      console.log(userInfo);
-      // if (isArray(roles)) {
-      // } else {
-      //   userInfo.roles = [];
-      //   this.setRoleList([]);
-      // }
+      // const userInfo = {
+      //   userId: '1',
+      //   username: 'nick',
+      //   roles: ri,
+      //   avatar: '',
+      //   realName: '用户名',
+      // };
+      // console.log(userInfo);
+      if (isArray(roles)) {
+      } else {
+        userInfo.roles = [];
+        this.setRoleList([]);
+      }
       this.setUserInfo(userInfo);
       return userInfo;
     },

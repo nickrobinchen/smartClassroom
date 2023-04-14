@@ -10,8 +10,8 @@ const teacher_menu: MenuModule = {
         name: '学生成绩分析',
       },
       {
-        path: 'teacher_info',
-        name: '教师个人信息',
+        path: 'teachercalendar',
+        name: '教师课表',
       },
       {
         path: 'lecturelist',

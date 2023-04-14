@@ -25,11 +25,11 @@ const teacherpanel: AppRouteModule = {
       },
     },
     {
-      path: 'teacher_info',
-      name: 'teacher_info',
-      component: () => import('/@/views/manage/StudentScore.vue'),
+      path: 'teachercalendar',
+      name: 'teachercalendar',
+      component: () => import('/@/views/teacher/TeacherCalendar.vue'),
       meta: {
-        title: '教师个人信息',
+        title: '教师课表',
       },
     },
     {

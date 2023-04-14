@@ -62,7 +62,7 @@
             <a-row :gutter="16" v-show="isSigningIn">
               <a-col :span="2.5" v-for="item in data" :key="item.name">
                 <a-card
-                  style="background-color: #84af9b; border-radius: 12px"
+                  style="background-color: #52c41a; border-radius: 12px"
                   :title="item.name"
                   :bordered="true"
                 >
@@ -70,21 +70,6 @@
                 </a-card>
               </a-col>
             </a-row>
-            <!--a-card title="Card Title">
-              <a-card-grid
-                v-for="item in data"
-                :key="item.name"
-                style="width: 12.5%; text-align: center"
-                >{{ item.name + item.time }}</a-card-grid
-              >
-            </a-card-->
-            <!--a-list v-show="isSigningIn" :grid="{ gutter: 16, column: 10 }" :data-source="data">
-              <template #renderItem="{ item }">
-                <a-list-item :align="center">
-                  <a-card :title="item.title">{{ item.time }}</a-card>
-                </a-list-item>
-              </template>
-            </a-list-->
             <a-collapse v-model:activeKey="activeKey">
               <a-collapse-panel key="1" header="本次签到结果" :disabled="!signInFinished">
                 <SignInResult
@@ -127,30 +112,26 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { defineComponent, createVNode, getCurrentInstance, ref } from 'vue';
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { defineComponent, createVNode, ref } from 'vue';
+  import { BasicTable, useTable } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
   //import AddCourseModal from '../manage/modal/AddCourseModal.vue';
   import AddLectureModal from './modal/AddLectureModal.vue';
   //import EditCourseModal from '../manage/modal/EditCourseModal.vue';
   import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
-  import { getCourseListApi, deleteCourseApi, DeleteCourseParams } from '/@/api/courseApi';
+  import { deleteCourseApi, DeleteCourseParams } from '/@/api/courseApi';
   import { Modal } from 'ant-design-vue';
   import { defHttp } from '/@/utils/http/axios';
-  import { ComponentInternalInstance } from 'vue';
-  import { studentListApi } from '/@/api/studentApi';
-  import { def } from '@vue/shared';
   import { onBeforeUnmount } from 'vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import SignInResult from './SignInResult.vue';
-  import { enableStorageEncryption } from '/@/settings/encryptionSetting';
   interface SignInModel {
-    uList: Array<String>;
-    sList: Array<String>;
+    uList: Array<string>;
+    sList: Array<string>;
     signNum: number;
     totalNum: number;
-    timeDuration: Array<String>;
+    timeDuration: Array<string>;
   }
   let lec_info: any = null;
   let lec_selected = -1;
@@ -281,6 +262,21 @@
             class_name = i.klass;
           }
         });
+        defHttp
+          .get<any>({ url: '/score/list', params: { lecture_id: lec_selected } })
+          .then((r: any) => {
+            score_data = [];
+            r.forEach((item) => {
+              score_data.push({
+                name: item.name,
+                id: item.id,
+                score: item.score === null ? '暂未评分' : item.score.toString(),
+              });
+            });
+            setScoreTableData(score_data);
+            score_fetched = true;
+          })
+          .catch((e) => console.log(e));
         defHttp
           .get<any>({ url: '/signIn/prev', params: { lec_id: lec_selected } })
           .then((r: any) => {
