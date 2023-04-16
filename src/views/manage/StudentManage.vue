@@ -8,7 +8,7 @@
           placeholder="请选择班级"
           @change="refreshSelected"
         />
-        <a-button type="primary" @click="handleReloadCurrent"> 刷新当前页 </a-button>
+        <a-button type="primary" @click="handleAddStudent"> 添加新学生 </a-button>
         <a-button type="primary" @click="handleReload"> 刷新并返回第一页 </a-button>
       </template>
       <template #bodyCell="{ column, record }">
@@ -30,6 +30,12 @@
         </template>
       </template>
     </BasicTable>
+
+    <AddStudentModal
+      @register="registerAddStudent"
+      @ok="test"
+      @visible-change="handleVisibleChange"
+    />
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -45,14 +51,19 @@
   }
   let selected: Selection = { college: '', class: '', grade: '' };
   const options = ref<Option[]>();
-  import { defineComponent, ref } from 'vue';
+  import { createVNode, defineComponent, ref } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { StudentListParams, studentListApi } from '/@/api/studentApi';
+  import { useModal } from '/@/components/Modal';
   import { defHttp } from '/@/utils/http/axios';
+  import AddStudentModal from './modal/AddStudentModal.vue';
+  import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+  import { Modal } from 'ant-design-vue/lib/components';
   export default defineComponent({
-    components: { BasicTable, TableAction, PageWrapper },
+    components: { BasicTable, TableAction, PageWrapper, AddStudentModal },
     setup() {
+      const [registerAddStudent, { openModal: openAddStudent }] = useModal();
       defHttp
         .get<Option[]>({
           url: '/student/classInfo', //'http://localhost:5000/teacher/list', // Api.TEACHER_LIST,
@@ -69,9 +80,7 @@
       let data: any[] = [];
 
       studentListApi(undefined).then((r: any) => {
-        console.log(r);
         data = r;
-        console.log(data);
         setTimeout(() => {
           return;
         }, 100);
@@ -90,13 +99,13 @@
               { text: 'Female', value: 'female' },
             ],
           },
-          // {
-          //   title: '家庭地址',
-          //   dataIndex: 'address',
-          // },
           {
             title: '学号',
             dataIndex: 'account',
+          },
+          {
+            title: '班级',
+            dataIndex: 'class',
           },
           {
             title: '联系电话',
@@ -136,13 +145,31 @@
           .catch((e) => console.log(e));
       }
       function handleDelete(record: Recordable) {
+        Modal.confirm({
+          title: () => '确定删除学生吗？',
+          icon: () => createVNode(ExclamationCircleOutlined),
+          content: () => '删除学生：' + record.name,
+          okText: () => 'Yes',
+          okType: 'danger',
+          cancelText: () => 'No',
+          onOk() {
+            defHttp.post({ url: '/student/delete', params: { id: record.id } }).then(() => {
+              setTimeout(() => {
+                reload();
+              }, 200);
+            });
+          },
+          onCancel() {
+            console.log('Cancel');
+          },
+        });
         console.log('点击了删除', record);
       }
       function handleOpen(record: Recordable) {
         console.log('点击了启用', record);
       }
-      function handleReloadCurrent() {
-        reload();
+      function handleAddStudent() {
+        openAddStudent(true);
       }
 
       function handleReload() {
@@ -158,7 +185,8 @@
         handleDelete,
         refreshSelected,
         handleOpen,
-        handleReloadCurrent,
+        registerAddStudent,
+        handleAddStudent,
         handleReload,
       };
     },

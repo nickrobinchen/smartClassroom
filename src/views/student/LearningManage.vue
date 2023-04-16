@@ -1,4 +1,4 @@
-<template>
+<!--template>
   <PageWrapper contentBackground contentClass="flex" dense contentFullHeight>
     <a-page-header title="课程教学管理" subtitle="">
       <template #extra>
@@ -432,4 +432,5 @@
       };
     },
   });
-</script>
+</script-->
+<template><br /></template>

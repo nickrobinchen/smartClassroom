@@ -7,7 +7,7 @@
           class="fix-auto-fill"
           size="large"
           v-model:value="formData.account"
-          :placeholder="t('sys.login.userName')"
+          :placeholder="'请输入学号/工号'"
         />
       </FormItem>
       <FormItem name="mobile" class="enter-x">
@@ -18,14 +18,14 @@
           class="fix-auto-fill"
         />
       </FormItem>
-      <FormItem name="sms" class="enter-x">
+      <!--FormItem name="sms" class="enter-x">
         <CountdownInput
           size="large"
           class="fix-auto-fill"
           v-model:value="formData.sms"
           :placeholder="t('sys.login.smsCode')"
-        />
-      </FormItem>
+        /->
+      </FormItem-->
       <FormItem name="password" class="enter-x">
         <StrengthMeter
           size="large"
@@ -42,12 +42,12 @@
         />
       </FormItem>
 
-      <FormItem class="enter-x" name="policy">
-        <!-- No logic, you need to deal with it yourself -->
+      <!--FormItem class="enter-x" name="policy">
+       No logic, you need to deal with it yourself >
         <Checkbox v-model:checked="formData.policy" size="small">
           {{ t('sys.login.policy') }}
         </Checkbox>
-      </FormItem>
+      </FormItem-->
 
       <Button
         type="primary"

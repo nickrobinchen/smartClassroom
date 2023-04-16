@@ -102,6 +102,7 @@ export default [
     timeout: 200,
     method: 'get',
     response: (request: requestParams) => {
+      return resultSuccess(undefined, { message: 'Token has been destroyed' });
       const token = getRequestToken(request);
       if (!token) return resultError('Invalid token');
       const checkUser = createFakeUserList().find((item) => item.token === token);

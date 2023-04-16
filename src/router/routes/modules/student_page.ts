@@ -19,7 +19,7 @@ const studentpanel: AppRouteModule = {
     {
       path: 'personal_info',
       name: 'personal_info',
-      component: () => import('/@/views/manage/StudentScore.vue'),
+      component: () => import('/@/views/student/StudentInfo.vue'),
       meta: {
         title: '我的个人信息',
       },
@@ -27,15 +27,15 @@ const studentpanel: AppRouteModule = {
     {
       path: 'lecturelist_stu',
       name: 'lecturelist',
-      component: () => import('/@/views/student/LectureList.vue'),
+      component: () => import('/@/views/student/StudentCalendar.vue'),
       meta: {
-        title: '我的课程',
+        title: '我的课表',
       },
     },
     {
       path: 'lecturemanage',
       name: 'lecturemanage',
-      component: () => import('/@/views/student/LectureManage.vue'),
+      component: () => import('/@/views/student/LearningManage.vue'),
       meta: {
         title: '课程学习管理',
       },

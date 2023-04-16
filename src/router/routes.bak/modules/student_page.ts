@@ -35,7 +35,7 @@ const studentpanel: AppRouteModule = {
     {
       path: 'lecturemanage',
       name: 'lecturemanage',
-      component: () => import('/@/views/student/LectureManage.vue'),
+      component: () => import('../../../views/student/LearningManage.vue'),
       meta: {
         title: '课程学习管理',
       },

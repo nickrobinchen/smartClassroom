@@ -97,11 +97,11 @@
             data: [
               {
                 value: this.signedNum,
-                name: '已签到',
+                name: '已签到:' + this.signedNum.toString(),
               },
               {
                 value: this.totalNum - this.signedNum,
-                name: '未签到',
+                name: '未签到:' + (this.totalNum - this.signedNum).toString(),
               },
             ],
           },
