@@ -20,6 +20,7 @@
   export default defineComponent({
     setup() {
       const value = ref<Moment>();
+      lectures = [];
       defHttp.post<any>({ url: '/lecture/list' }).then((r) => {
         r.forEach((item) => {
           const dates = item.startAndEndDate.split(' 至 ');

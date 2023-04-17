@@ -7,6 +7,10 @@ const admin_menu: MenuModule = {
     name: '教学管理（管理员身份）',
     children: [
       {
+        path: 'homePage',
+        name: '管理员主页',
+      },
+      {
         path: 'teachermanage',
         name: '教师管理',
       },

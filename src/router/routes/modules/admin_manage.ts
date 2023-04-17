@@ -8,7 +8,7 @@ const adminmanage: AppRouteModule = {
   path: '/adminmanage',
   name: 'adminmanage',
   component: LAYOUT,
-  redirect: '/adminmanage/teachermanage',
+  redirect: '/adminmanage/homePage',
   meta: {
     orderNo: 100000,
     icon: 'ion:layers-outline',
@@ -16,6 +16,14 @@ const adminmanage: AppRouteModule = {
     roles: [RoleEnum.ADMIN, RoleEnum.SUPER],
   },
   children: [
+    {
+      path: 'homePage',
+      name: 'homePage',
+      component: () => import('/@/views/manage/ManagerHome.vue'),
+      meta: {
+        title: '管理员主页',
+      },
+    },
     {
       path: 'teachermanage',
       name: 'teachermanage',

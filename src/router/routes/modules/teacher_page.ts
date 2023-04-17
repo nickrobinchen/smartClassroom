@@ -8,7 +8,7 @@ const teacherpanel: AppRouteModule = {
   path: '/teacherpanel',
   name: 'teacherpanel',
   component: LAYOUT,
-  redirect: '/teacherpanel/showscore',
+  redirect: '/teacherpanel/lecturelist',
   meta: {
     orderNo: 100010,
     roles: [RoleEnum.SUPER, RoleEnum.TEACHER],
