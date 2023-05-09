@@ -7,14 +7,12 @@
         </li>
       </ul>
     </template>
-    <template #monthCellRender="{ current: value }"> </template>
   </a-calendar>
 </template>
 <script lang="ts">
   import { defineComponent, ref } from 'vue';
   import moment, { Moment } from 'moment';
   import { defHttp } from '/@/utils/http/axios';
-  import { ItemContentProps } from '/@/components/ContextMenu';
 
   let lectures: any[] = [];
   export default defineComponent({

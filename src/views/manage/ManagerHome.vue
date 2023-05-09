@@ -63,7 +63,7 @@
 </template>
 <script lang="ts" setup>
   import { PageWrapper } from '/@/components/Page';
-  import { computed, onMounted, ref } from 'vue';
+  import { Ref, computed, onMounted, ref } from 'vue';
   import { Avatar } from 'ant-design-vue';
   import { useUserStore } from '/@/store/modules/user';
   import headerImg from '/@/assets/images/header.jpg';
@@ -76,7 +76,7 @@
   //const { barData, lineData, category } = getLineData;
   onMounted(() => {
     const { setOptions, echarts } = useECharts(relationChartRef as Ref<HTMLDivElement>);
-    const { setOptions: setStuOptions, echarts: e_1 } = useECharts(chartRef as Ref<HTMLDivElement>);
+    const { setOptions: setStuOptions } = useECharts(chartRef as Ref<HTMLDivElement>);
     echarts.use([GraphChart]);
     //set_op = setOptions;
     defHttp.get<any>({ url: '/manager/basicData' }).then((result) => {
@@ -100,69 +100,9 @@
             },
             edgeSymbol: ['circle', 'arrow'],
             edgeSymbolSize: [4, 12],
-            data: result.teacher_class_relation.nodes /*[
-              {
-                name: 'Node 1',
-                x: 300,
-                y: 300,
-              },
-              {
-                name: 'Node 2',
-                x: 800,
-                y: 300,
-              },
-              {
-                name: 'Node 3',
-                x: 550,
-                y: 100,
-              },
-              {
-                name: 'Node 4',
-                x: 550,
-                y: 500,
-              },
-            ]*/,
+            data: result.teacher_class_relation.nodes,
             // links: [],
-            links: result.teacher_class_relation.links /*[
-              {
-                source: 0,
-                target: 1,
-                symbolSize: [5, 20],
-                label: {
-                  show: true,
-                },
-                lineStyle: {
-                  width: 5,
-                  curveness: 0.2,
-                },
-              },
-              {
-                source: 'Node 2',
-                target: 'Node 1',
-                label: {
-                  show: true,
-                },
-                lineStyle: {
-                  curveness: 0.2,
-                },
-              },
-              {
-                source: 'Node 1',
-                target: 'Node 3',
-              },
-              {
-                source: 'Node 2',
-                target: 'Node 3',
-              },
-              {
-                source: 'Node 2',
-                target: 'Node 4',
-              },
-              {
-                source: 'Node 1',
-                target: 'Node 4',
-              },
-            ]*/,
+            links: result.teacher_class_relation.links,
             edgeLabel: {
               //边的设置
               show: true,
@@ -193,11 +133,6 @@
       setOptions(relationOption);
     });
   });
-  const basicData = ref<any>({
-    student: { grade: '', class_name: '', college: '' },
-    lessonInfo: [],
-  });
-
   const userStore = useUserStore();
   const userinfo = computed(() => userStore.getUserInfo);
   const activeKey = ref(['1', '2']);

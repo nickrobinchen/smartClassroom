@@ -37,15 +37,15 @@
         default: 0,
       },
       signedList: {
-        type: Array<String>,
+        type: Array<string>,
         default: [],
       },
       unsignedList: {
-        type: Array<String>,
+        type: Array<string>,
         default: [],
       },
       timeDuration: {
-        type: Array<String>,
+        type: Array<string>,
         default: ['2023年4月13日 19:30', '19:35'],
       },
       width: {
@@ -61,6 +61,7 @@
       const chartRef = ref<HTMLDivElement | null>(null);
       //const { barData, lineData, category } = getLineData;
       onMounted(() => {
+        // eslint-disable-next-line no-unused-vars
         const { setOptions, echarts } = useECharts(chartRef as Ref<HTMLDivElement>);
         set_op = setOptions;
       });

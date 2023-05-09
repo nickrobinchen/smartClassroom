@@ -2,9 +2,9 @@
   <BasicModal
     v-bind="$attrs"
     @register="register"
-    title="修改课程"
+    title="添加管理员"
     @visible-change="handleVisibleChange"
-    @ok="handleEdit"
+    @ok="handleAdd"
   >
     <div class="pt-3px pr-3px">
       <BasicForm @register="registerForm" :model="model" />
@@ -15,9 +15,9 @@
   import { defineComponent, ref, nextTick } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, FormSchema, useForm } from '/@/components/Form/index';
-  import { EditCourseParams, editCourseApi } from '/@/api/courseApi';
+  import { defHttp } from '/@/utils/http/axios';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
-  let id = -1;
   // const rules = {
   //   name: [
   //     { required: true, message: 'Please input Activity name', trigger: 'blur' },
@@ -36,11 +36,13 @@
   //   resource: [{ required: true, message: 'Please select activity resource', trigger: 'change' }],
   //   desc: [{ required: true, message: 'Please input activity form', trigger: 'blur' }],
   // };
+
+  const { createMessage } = useMessage();
   const schemas: FormSchema[] = [
     {
       field: 'name',
       component: 'Input',
-      label: '课程名称',
+      label: '管理员姓名',
       required: true,
       colProps: {
         span: 20,
@@ -48,10 +50,26 @@
       //defaultValue: '111',
     },
     {
-      field: 'grade',
+      field: 'account',
       component: 'Input',
-      label: '课程年级',
+      label: '管理员账号',
+      rules: [
+        {
+          type: 'regexp',
+          pattern: RegExp('M.*'),
+          message: '管理员账号格式不正确，必须以M开头！',
+          trigger: 'blur',
+        },
+      ],
       required: true,
+      colProps: {
+        span: 20,
+      },
+    },
+    {
+      field: 'password',
+      component: 'Input',
+      label: '管理员密码',
       colProps: {
         span: 20,
       },
@@ -64,14 +82,13 @@
     },
     setup(props) {
       const modelRef = ref({});
-      console.log(props);
       const valid = true;
       const [
         registerForm,
         {
           getFieldsValue,
           validate,
-          setFieldsValue,
+          // setFieldsValue,
           // setProps
         },
       ] = useForm({
@@ -89,36 +106,28 @@
 
       function onDataReceive(data) {
         console.log('Data Received', data);
-        id = data.id;
-        // 方式1;
-
-        setFieldsValue({
-          name: data.name,
-          grade: data.grade,
-        });
-
-        // // 方式2
-        //modelRef.value = { field2: data.data, field1: data.info };
-
-        // setProps({
-        //   model:{ field2: data.data, field1: data.info }
-        // })
       }
 
       function handleVisibleChange(v) {
         v && props.userData && nextTick(() => onDataReceive(props.userData));
       }
 
-      function handleEdit(_e: Event) {
+      function handleAdd(_e: Event) {
         validate()
           .then(() => {
             var formData = getFieldsValue();
-            const params: EditCourseParams = {
-              name: formData.name,
-              grade: formData.grade,
-              id: id,
-            };
-            editCourseApi(params);
+            if (formData.account[0] != 'M') {
+              createMessage.error('管理员账号格式不正确，必须以M开头！');
+              return;
+            }
+            defHttp.post<any>({
+              url: '/manager/add',
+              params: {
+                name: formData.name,
+                account: formData.account,
+                password: formData.password,
+              },
+            });
             //emit('posted', e);
             setModalProps({ visible: false });
           })
@@ -130,7 +139,7 @@
           return;
         }
       }
-      return { register, schemas, registerForm, model: modelRef, handleVisibleChange, handleEdit };
+      return { register, schemas, registerForm, model: modelRef, handleVisibleChange, handleAdd };
     },
   });
 </script>

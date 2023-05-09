@@ -11,7 +11,7 @@ const teacherpanel: AppRouteModule = {
   redirect: '/teacherpanel/lecturelist',
   meta: {
     orderNo: 100010,
-    roles: [RoleEnum.SUPER, RoleEnum.TEACHER],
+    roles: [RoleEnum.TEACHER],
     icon: 'ion:layers-outline',
     title: '教学管理（教师身份）',
   },

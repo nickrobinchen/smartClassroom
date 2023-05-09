@@ -3,7 +3,8 @@
     >立即签到</a-button
   > </template
 ><script lang="ts">
-  import { defineComponent, ref } from 'vue';
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  import { defineComponent } from 'vue';
   import { defHttp } from '/@/utils/http/axios';
   import { notification } from 'ant-design-vue';
 

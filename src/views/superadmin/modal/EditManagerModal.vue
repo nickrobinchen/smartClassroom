@@ -2,7 +2,7 @@
   <BasicModal
     v-bind="$attrs"
     @register="register"
-    title="修改课程"
+    title="修改管理员"
     @visible-change="handleVisibleChange"
     @ok="handleEdit"
   >
@@ -15,7 +15,7 @@
   import { defineComponent, ref, nextTick } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, FormSchema, useForm } from '/@/components/Form/index';
-  import { EditCourseParams, editCourseApi } from '/@/api/courseApi';
+  import { defHttp } from '/@/utils/http/axios';
 
   let id = -1;
   // const rules = {
@@ -113,12 +113,14 @@
         validate()
           .then(() => {
             var formData = getFieldsValue();
-            const params: EditCourseParams = {
-              name: formData.name,
-              grade: formData.grade,
-              id: id,
-            };
-            editCourseApi(params);
+            defHttp.post<any>({
+              url: '/manager/edit',
+              params: {
+                name: formData.name,
+                grade: formData.grade,
+                id: id,
+              },
+            });
             //emit('posted', e);
             setModalProps({ visible: false });
           })

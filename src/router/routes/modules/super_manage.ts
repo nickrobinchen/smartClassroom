@@ -5,23 +5,23 @@ import { t } from '/@/hooks/web/useI18n';
 import { RoleEnum } from '/@/enums/roleEnum';
 
 const adminmanage: AppRouteModule = {
-  path: '/adminmanage',
+  path: '/supermanage',
   name: 'adminmanage',
   component: LAYOUT,
-  redirect: '/adminmanage/homePage',
+  redirect: '/supermanage/managermanage',
   meta: {
     orderNo: 100000,
     icon: 'ion:layers-outline',
-    title: '用户管理（管理员身份）',
-    roles: [RoleEnum.ADMIN],
+    title: '超级管理员管理',
+    roles: [RoleEnum.SUPER],
   },
   children: [
     {
-      path: 'homePage',
-      name: 'homePage',
-      component: () => import('/@/views/manage/ManagerHome.vue'),
+      path: 'managermanage',
+      name: 'managermanage',
+      component: () => import('/@/views/superadmin/ManagerManage.vue'),
       meta: {
-        title: '管理员主页',
+        title: '管理员成员管理',
       },
     },
     {

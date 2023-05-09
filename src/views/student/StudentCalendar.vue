@@ -20,6 +20,7 @@
     setup() {
       const value = ref<Moment>();
       defHttp.get<any>({ url: '/student/fullInfo' }).then((r) => {
+        lessons = [];
         r.lessonInfo.forEach((item) => {
           lessons.push({
             begin: moment(item.detail.start_date, 'YYYY-MM-DD'),

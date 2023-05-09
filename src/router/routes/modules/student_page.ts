@@ -13,7 +13,7 @@ const studentpanel: AppRouteModule = {
     orderNo: 100010,
     icon: 'ion:layers-outline',
     title: '学习管理（学生身份）',
-    roles: [RoleEnum.STUDENT, RoleEnum.SUPER],
+    roles: [RoleEnum.STUDENT],
   },
   children: [
     {
