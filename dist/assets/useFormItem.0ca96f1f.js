@@ -1,0 +1,1 @@
+import{a4 as f,w as i,a5 as m,M as v,f as d,a6 as g,a7 as w,k as S}from"./index.c77972c6.js";function I(u,n="value",o="change",c){const a=f(),s=a==null?void 0:a.emit,t=i({value:u[n]}),r=m(t),l=e=>{t.value=e};return v(()=>{t.value=u[n]}),[d({get(){return t.value},set(e){g(e,r.value)||(t.value=e,setTimeout(()=>{s==null||s(o,e,...w(S(c))||[])}))}}),l,r]}export{I as u};

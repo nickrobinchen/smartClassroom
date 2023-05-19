@@ -1,0 +1,1 @@
+import{bE as r}from"./index.c77972c6.js";const o=e=>r.post({url:"/course/add",params:e,headers:{ignoreCancelToken:!0}}),t=e=>r.post({url:"/course/delete",params:e,headers:{ignoreCancelToken:!0}}),a=e=>r.post({url:"/course/edit",params:e,headers:{ignoreCancelToken:!0}}),n=e=>r.get({url:"/course/list",params:null,headers:{ignoreCancelToken:!0}});export{o as a,t as d,a as e,n as g};
