@@ -33,6 +33,14 @@ const studentpanel: AppRouteModule = {
       },
     },
     {
+      path: 'discussion',
+      name: 'discussion',
+      component: () => import('/@/views/student/Discussion.vue'),
+      meta: {
+        title: '参与课堂讨论',
+      },
+    },
+    {
       path: 'lecturemanage',
       name: 'lecturemanage',
       component: () => import('/@/views/student/LearningManage.vue'),

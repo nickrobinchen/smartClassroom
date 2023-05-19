@@ -14,6 +14,10 @@ const student_menu: MenuModule = {
         name: '我的课表',
       },
       {
+        path: 'discussion',
+        name: '课堂讨论',
+      },
+      {
         path: 'lecturemanage',
         name: '学习管理',
       },

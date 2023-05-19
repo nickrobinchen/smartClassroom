@@ -11,6 +11,10 @@ const admin_menu: MenuModule = {
         name: '管理员主页',
       },
       {
+        path: 'devicemanage',
+        name: '教室设备控制',
+      },
+      {
         path: 'teachermanage',
         name: '教师管理',
       },

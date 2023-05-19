@@ -2,7 +2,7 @@
   <BasicModal
     v-bind="$attrs"
     @register="register"
-    title="添加教师"
+    title="添加学生"
     @visible-change="handleVisibleChange"
     @ok="handleAdd"
   >

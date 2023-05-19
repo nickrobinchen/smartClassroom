@@ -103,6 +103,19 @@
               :immediate="false"
             />
           </a-tab-pane>
+          <a-tab-pane key="4" tab="随机选人">
+            <a-button type="primary" :disabled="isSigningIn" @click="showSignInModal"
+              >随机抽选学生</a-button
+            >
+            <a-divider />
+            <a-list :grid="{ gutter: 16, column: 10 }" :data-source="stu_data_i">
+              <template #renderItem="{ item }">
+                <a-list-item>
+                  <a-card :title="item.name" />
+                </a-list-item>
+              </template>
+            </a-list>
+          </a-tab-pane>
         </a-tabs>
       </template>
     </a-page-header>
@@ -150,6 +163,138 @@
     },
     setup() {
       const activeKey = ref('');
+      const stu_data_i = [
+        {
+          account: 'U202220012',
+          class: '电信2201班',
+          email: 'chaofeng@example.net',
+          id: 39,
+          index: 1,
+          klass_id: 3,
+          name: '陈玉',
+          tel: '13114161530',
+        },
+        {
+          account: 'U202220013',
+          class: '电信2201班',
+          email: 'wei82@example.net',
+          id: 40,
+          index: 2,
+          klass_id: 3,
+          name: '魏雪梅',
+          tel: '18612937066',
+        },
+        {
+          account: 'U202220014',
+          class: '电信2201班',
+          email: 'leili@example.org',
+          id: 41,
+          index: 3,
+          klass_id: 3,
+          name: '胡浩',
+          tel: '15798628437',
+        },
+        {
+          account: 'U202220015',
+          class: '电信2201班',
+          email: 'xiuying52@example.com',
+          id: 42,
+          index: 4,
+          klass_id: 3,
+          name: '袁艳',
+          tel: '15213723899',
+        },
+        {
+          account: 'U202220016',
+          class: '电信2201班',
+          email: 'jxia@example.org',
+          id: 43,
+          index: 5,
+          klass_id: 3,
+          name: '吕俊',
+          tel: '13772252084',
+        },
+        {
+          account: 'U202220017',
+          class: '电信2201班',
+          email: 'junren@example.net',
+          id: 44,
+          index: 6,
+          klass_id: 3,
+          name: '庞桂荣',
+          tel: '15090477990',
+        },
+        {
+          account: 'U202220018',
+          class: '电信2201班',
+          email: 'chao01@example.com',
+          id: 45,
+          index: 7,
+          klass_id: 3,
+          name: '王丽娟',
+          tel: '13969487739',
+        },
+        {
+          account: 'U202220019',
+          class: '电信2201班',
+          email: 'eyu@example.com',
+          id: 46,
+          index: 8,
+          klass_id: 3,
+          name: '薛丽',
+          tel: '14552460572',
+        },
+        {
+          account: 'U202220020',
+          class: '电信2201班',
+          email: 'ggong@example.com',
+          id: 47,
+          index: 9,
+          klass_id: 3,
+          name: '马莹',
+          tel: '13110849959',
+        },
+        {
+          account: 'U202220021',
+          class: '电信2201班',
+          email: 'vye@example.org',
+          id: 48,
+          index: 10,
+          klass_id: 3,
+          name: '邱成',
+          tel: '14506536740',
+        },
+        {
+          account: 'U202220022',
+          class: '电信2201班',
+          email: 'fangna@example.com',
+          id: 49,
+          index: 11,
+          klass_id: 3,
+          name: '徐桂芳',
+          tel: '18182687221',
+        },
+        {
+          account: 'U202220023',
+          class: '电信2201班',
+          email: 'nyao@example.com',
+          id: 50,
+          index: 12,
+          klass_id: 3,
+          name: '刘秀英',
+          tel: '18856630789',
+        },
+        {
+          account: 'U202220025',
+          class: '电信2201班',
+          email: 'ufeng@example.net',
+          id: 52,
+          index: 13,
+          klass_id: 3,
+          name: '宋玉',
+          tel: '13229827769',
+        },
+      ];
       const options = ref<Array<any>>([]);
       const isSigningIn = ref(false);
       const signInFinished = ref(false);
@@ -510,6 +655,7 @@
         value,
         signInInfo,
         signin_data,
+        stu_data_i,
         showTimeRemaining,
         selectFirst,
         registerTable,

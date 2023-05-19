@@ -48,6 +48,14 @@ const adminmanage: AppRouteModule = {
         title: '课程管理',
       },
     },
+    {
+      path: 'devicemanage',
+      name: 'devicemanage',
+      component: () => import('/@/views/manage/DeviceManage.vue'),
+      meta: {
+        title: '智慧教室设备控制',
+      },
+    },
   ],
 };
 
